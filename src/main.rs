@@ -1,6 +1,6 @@
 use askama::Template;
 use axum::{
-    // extract,
+    extract,
     http::StatusCode,
     response::{Html, IntoResponse, Response},
     routing::get,
@@ -10,9 +10,13 @@ use std::net::SocketAddr;
 
 #[derive(Template)]
 #[template(path = "hello.html")]
-struct HelloTemplate<'a> {
-    name: &'a str,
+struct HelloTemplate {
+    name: String,
 }
+
+#[derive(Template)]
+#[template(path = "index.html")]
+struct IndexTemplate {}
 
 struct HtmlTemplate<T>(T);
 
@@ -34,8 +38,9 @@ impl<T> IntoResponse for HtmlTemplate<T>
 #[tokio::main]
 async fn main() {
     let app = Router::new()
+        .route("/", get(index_page))
         .route("/hello", get(raw_string))
-        .route("/", get(index_page));
+        .route("/name/:name/", get(template_page));
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
 
     axum::Server::bind(&addr)
@@ -49,7 +54,12 @@ async fn raw_string() -> &'static str {
     "hello world(raw string)"
 }
 
+async fn template_page(extract::Path(name): extract::Path<String>) -> impl IntoResponse {
+    let template = HelloTemplate { name: String::from(name) };
+    HtmlTemplate(template)
+}
+
 async fn index_page() -> impl IntoResponse {
-    let template = HelloTemplate { name: "taro" };
+    let template = IndexTemplate {};
     HtmlTemplate(template)
 }
