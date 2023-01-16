@@ -41,7 +41,10 @@ async fn main() {
         .route("/", get(index_page))
         .route("/hello", get(raw_string))
         .route("/name/:name/", get(template_page));
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let port = 3000;
+    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+
+    println!("listening on port {}", port);
 
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
