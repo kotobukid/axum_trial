@@ -8,7 +8,14 @@
 hello {{ name }}
 <br />
 <a href="/hello">hello page</a>
-<form action="/p" method="GET">
+<h1>GET</h1>
+<form action="/g" method="GET">
+    <input type="text" name="name">
+    <br>
+    <input type="submit" value="submit">
+</form>
+<h1>POST</h1>
+<form action="/p" method="POST">
     <input type="text" name="name">
     <br>
     <input type="submit" value="submit">

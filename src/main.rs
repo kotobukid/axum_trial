@@ -7,6 +7,7 @@ use axum::{
     routing::post,
     Router,
     extract::Query,
+    extract::Form,
 };
 use std::net::SocketAddr;
 use serde::Deserialize;
@@ -44,7 +45,9 @@ async fn main() {
         .route("/", get(index_page))
         .route("/hello", get(raw_string))
         .route("/name/:name/", get(template_page))
-        .route("/p", get(catch_qs))
+        .route("/g", get(catch_qs))
+        .route("/p", post(catch_form))
+        // .route("/p", get(catch_qs).post(catch_form))
         ;
     let port = 3000;
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
@@ -76,7 +79,17 @@ async fn catch_qs(Query(params): Query<Params>) -> String {
         Some(s) => {
             // params.name.unwrap()
             String::from(s)
-        },
+        }
+        _ => { String::from("<None>") }
+    }
+}
+
+async fn catch_form(Form(params): Form<Params>) -> String {
+    println!("{:?}", &params.name);
+    match &params.name {
+        Some(s) => {
+            String::from(s)
+        }
         _ => { String::from("<None>") }
     }
 }
