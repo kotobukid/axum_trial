@@ -10,15 +10,18 @@ hello {{ name }}
 <a href="/hello">hello page</a>
 <h1>GET</h1>
 <form action="/g" method="GET">
-    <input type="text" name="name">
+    <input type="text" name="name" autocomplete="off">
     <br>
     <input type="submit" value="submit">
 </form>
 <h1>POST</h1>
 <form action="/p" method="POST">
-    <input type="text" name="name">
+    <input type="text" name="name" autocomplete="off">
     <br>
     <input type="submit" value="submit">
 </form>
+<style>
+    form { outline: 1px solid grey; }
+</style>
 </body>
 </html>
