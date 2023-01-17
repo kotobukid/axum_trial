@@ -4,9 +4,12 @@ use axum::{
     http::StatusCode,
     response::{Html, IntoResponse, Response},
     routing::get,
+    routing::post,
     Router,
+    extract::Query,
 };
 use std::net::SocketAddr;
+use serde::Deserialize;
 
 #[derive(Template)]
 #[template(path = "hello.html")]
@@ -40,7 +43,9 @@ async fn main() {
     let app = Router::new()
         .route("/", get(index_page))
         .route("/hello", get(raw_string))
-        .route("/name/:name/", get(template_page));
+        .route("/name/:name/", get(template_page))
+        .route("/p", get(catch_qs))
+        ;
     let port = 3000;
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
 
@@ -55,6 +60,25 @@ async fn main() {
 
 async fn raw_string() -> &'static str {
     "hello world(raw string)"
+}
+
+#[derive(Debug, Deserialize)]
+#[allow(dead_code)]
+struct Params {
+    // #[serde(default, deserialize_with = "empty_string_as_none")]
+    // foo: Option<i32>,
+    name: Option<String>,
+}
+
+async fn catch_qs(Query(params): Query<Params>) -> String {
+    println!("{:?}", &params.name);
+    match &params.name {
+        Some(s) => {
+            // params.name.unwrap()
+            String::from(s)
+        },
+        _ => { String::from("<None>") }
+    }
 }
 
 async fn template_page(extract::Path(name): extract::Path<String>) -> impl IntoResponse {
