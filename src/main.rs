@@ -47,6 +47,7 @@ async fn main() {
         .route("/name/:name/", get(template_page))
         .route("/g", get(catch_qs))
         .route("/p", post(catch_form))
+        .route("/d", get(dynamic_file_reading))
         // .route("/p", get(catch_qs).post(catch_form))
         .fallback(handler_404)
         ;
@@ -107,4 +108,8 @@ async fn index_page() -> impl IntoResponse {
 
 async fn handler_404() -> impl IntoResponse {
     (StatusCode::NOT_FOUND, "nothing to see here")
+}
+
+async fn dynamic_file_reading() -> impl IntoResponse {
+    (StatusCode::OK, "dynamic file reading")
 }
