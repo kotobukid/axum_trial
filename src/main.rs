@@ -48,6 +48,7 @@ async fn main() {
         .route("/g", get(catch_qs))
         .route("/p", post(catch_form))
         // .route("/p", get(catch_qs).post(catch_form))
+        .fallback(handler_404)
         ;
     let port = 3000;
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
@@ -102,4 +103,8 @@ async fn template_page(extract::Path(name): extract::Path<String>) -> impl IntoR
 async fn index_page() -> impl IntoResponse {
     let template = IndexTemplate {};
     HtmlTemplate(template)
+}
+
+async fn handler_404() -> impl IntoResponse {
+    (StatusCode::NOT_FOUND, "nothing to see here")
 }
