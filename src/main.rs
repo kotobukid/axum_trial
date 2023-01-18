@@ -49,7 +49,7 @@ async fn main() {
         .route("/name/:name/", get(template_page))
         .route("/g", get(catch_qs))
         .route("/p", post(catch_form))
-        .route("/d", get(dynamic_file_reading))
+        .route("/d.html", get(dynamic_file_reading))
         // .route("/p", get(catch_qs).post(catch_form))
         .fallback(handler_404)
         ;
