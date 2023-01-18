@@ -11,6 +11,8 @@ use axum::{
 };
 use std::net::SocketAddr;
 use serde::Deserialize;
+use std::fs::File;
+use std::io::Read;
 
 #[derive(Template)]
 #[template(path = "hello.html")]
@@ -110,6 +112,11 @@ async fn handler_404() -> impl IntoResponse {
     (StatusCode::NOT_FOUND, "nothing to see here")
 }
 
-async fn dynamic_file_reading() -> impl IntoResponse {
-    (StatusCode::OK, "dynamic file reading")
+async fn dynamic_file_reading() -> String {
+    let mut f = File::open("./templates/dynamic_hello.html").expect("file not found");
+    let mut contents = String::new();
+    f.read_to_string(&mut contents)
+        .expect("something went wrong reading the file");
+    contents
+    // (StatusCode::OK, &contents)
 }
