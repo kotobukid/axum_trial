@@ -112,11 +112,11 @@ async fn handler_404() -> impl IntoResponse {
     (StatusCode::NOT_FOUND, "nothing to see here")
 }
 
-async fn dynamic_file_reading() -> String {
+async fn dynamic_file_reading() -> Html<String> {
     let mut f = File::open("./templates/dynamic_hello.html").expect("file not found");
     let mut contents = String::new();
     f.read_to_string(&mut contents)
         .expect("something went wrong reading the file");
-    contents
+    Html(contents)
     // (StatusCode::OK, &contents)
 }
