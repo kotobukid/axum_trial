@@ -8,9 +8,10 @@ use axum::{
     Router,
     extract::Query,
     extract::Form,
+    Json,
 };
 use std::net::SocketAddr;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::Read;
 
@@ -50,6 +51,7 @@ async fn main() {
         .route("/g", get(catch_qs))
         .route("/p", post(catch_form))
         .route("/d.html", get(dynamic_file_reading))
+        .route("/json", get(json_sample))
         // .route("/p", get(catch_qs).post(catch_form))
         .fallback(handler_404)
         ;
@@ -69,7 +71,7 @@ async fn raw_string() -> &'static str {
     "hello world(raw string)"
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[allow(dead_code)]
 struct Params {
     // #[serde(default, deserialize_with = "empty_string_as_none")]
@@ -119,4 +121,26 @@ async fn dynamic_file_reading() -> Html<String> {
         .expect("something went wrong reading the file");
     Html(contents)
     // (StatusCode::OK, &contents)
+}
+
+async fn json_sample(
+    // pagination: Option<Query<Pagination>>,
+    // State(db): State<Db>,
+) -> impl IntoResponse {
+    // let todos = db.read().unwrap();
+    //
+    // let Query(pagination) = pagination.unwrap_or_default();
+    //
+    // let todos = todos
+    //     .values()
+    //     .skip(pagination.offset.unwrap_or(0))
+    //     .take(pagination.limit.unwrap_or(usize::MAX))
+    //     .cloned()
+    //     .collect::<Vec<_>>();
+
+    let d = Params {
+        name: Some(String::from("hoge"))
+    };
+
+    Json(d)
 }
