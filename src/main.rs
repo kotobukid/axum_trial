@@ -8,12 +8,14 @@ use axum::{
     Router,
     extract::Query,
     extract::Form,
-    Json,
+    // Json,
 };
 use std::net::SocketAddr;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::Read;
+use axum::http::HeaderValue;
+use hyper::Body;
 
 #[derive(Template)]
 #[template(path = "hello.html")]
@@ -52,6 +54,7 @@ async fn main() {
         .route("/p", post(catch_form))
         .route("/d.html", get(dynamic_file_reading))
         .route("/json", get(json_sample))
+        .route("/api/name", get(json_sample))
         // .route("/p", get(catch_qs).post(catch_form))
         .fallback(handler_404)
         ;
@@ -127,20 +130,27 @@ async fn json_sample(
     // pagination: Option<Query<Pagination>>,
     // State(db): State<Db>,
 ) -> impl IntoResponse {
-    // let todos = db.read().unwrap();
-    //
-    // let Query(pagination) = pagination.unwrap_or_default();
-    //
-    // let todos = todos
-    //     .values()
-    //     .skip(pagination.offset.unwrap_or(0))
-    //     .take(pagination.limit.unwrap_or(usize::MAX))
-    //     .cloned()
-    //     .collect::<Vec<_>>();
-
-    let d = Params {
-        name: Some(String::from("hoge"))
+   let d = Params {
+        name: Some(String::from("hoge")),
     };
 
-    Json(d)
+    let mut response = Response::new(Body::from(
+        serde_json::to_string(&d).expect("Failed to serialize."),
+    ));
+
+    let headers = response.headers_mut();
+    headers.insert(
+        "Access-Control-Allow-Origin",
+        HeaderValue::from_static("*"),
+    );
+    headers.insert(
+        "Access-Control-Allow-Methods",
+        HeaderValue::from_static("POST, GET, PUT, DELETE, OPTIONS"),
+    );
+    headers.insert(
+        "Access-Control-Allow-Headers",
+        HeaderValue::from_static("Content-Type"),
+    );
+
+    response
 }
