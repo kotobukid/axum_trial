@@ -11,7 +11,6 @@ use axum::{
     routing::post,
     Router,
 };
-use hyper::body::Body;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::Read;
@@ -101,7 +100,7 @@ async fn catch_form(Form(params): Form<Params>) -> String {
 
 async fn template_page(extract::Path(name): extract::Path<String>) -> impl IntoResponse {
     let template = HelloTemplate {
-        name: String::from(name),
+        name,
     };
     HtmlTemplate(template)
 }
@@ -133,7 +132,7 @@ async fn json_sample(// pagination: Option<Query<Pagination>>,
 
     let body = serde_json::to_string(&d).expect("Failed to serialize.");
 
-    let mut response: Response<String> = Response::new(body.into());
+    let mut response: Response<String> = Response::new(body);
 
     let headers = response.headers_mut();
     headers.insert("Access-Control-Allow-Origin", HeaderValue::from_static("*"));
